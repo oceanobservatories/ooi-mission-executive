@@ -1,0 +1,49 @@
+name: HydrateRidgeSummit_Camera_Standard
+desc: Uses the Digital Still Camera at Hydrate Ridge to take pictures on a scheduled time according to the OOI Sampling Policy
+version: 1-00
+
+debug: true
+drivers:
+- RS01SUM1-MJ01B-05-CAMDSB103
+- RS01SUM1-MJ01B
+error_policy:
+  type: abort
+
+blocks:
+- label: mission
+  sequence:
+  - command: RSN_PLATFORM_DRIVER_TURN_ON_PORT
+    execute: RS01SUM1-MJ01B
+    kwargs:
+      port_id: J05-IP1
+      src: HydrateRidgeSummit_Camera_Standard
+  - reset: RS01SUM1-MJ01B-05-CAMDSB103
+  - sleep: 5
+  - discover: RS01SUM1-MJ01B-05-CAMDSB103
+  - parameter: PRESET_NUMBER
+    set: RS01SUM1-MJ01B-05-CAMDSB103
+    value: 1
+  - block_name: capture
+    loop: 20
+  - parameter: PRESET_NUMBER
+    set: RS01SUM1-MJ01B-05-CAMDSB103
+    value: 2
+  - block_name: capture
+    loop: 20
+  - parameter: PRESET_NUMBER
+    set: RS01SUM1-MJ01B-05-CAMDSB103
+    value: 3
+  - block_name: capture
+    loop: 20
+  - command: RSN_PLATFORM_DRIVER_TURN_OFF_PORT
+    execute: RS01SUM1-MJ01B
+    kwargs:
+      port_id: J05-IP1
+      src: HydrateRidgeSummit_Camera_Standard
+  - reset: RS01SUM1-MJ01B-05-CAMDSB103
+
+- label: capture
+  sequence:
+  - command: PROTOCOL_EVENT_ACQUIRE_SAMPLE
+    execute: RS01SUM1-MJ01B-05-CAMDSB103
+  - sleep: 30
