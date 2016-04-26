@@ -1,0 +1,19 @@
+name: CAMDS_event_scheduling_test
+desc: Test for Event Based Sceduling
+version: 1-00
+
+debug: true
+drivers:
+- RS10ENGC-XX00X-00-CAMDSB001
+error_policy:
+  type: abort
+
+schedule:
+  source: 'oms'
+  event: 'heartbeat failure'
+
+blocks:
+- label: mission
+  sequence:
+  - execute: RS10ENGC-XX00X-00-CAMDSB001
+    command: DRIVER_EVENT_ACQUIRE_STATUS

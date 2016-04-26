@@ -1,31 +1,51 @@
 from threading import Thread
 import logging
-import time
+import json
+
+from kombu.mixins import ConsumerMixin
+from kombu import Connection, Queue, Exchange
 
 __author__ = 'petercable'
 
 log = logging.getLogger(__name__)
 
 
-class JmsReader(Thread):
+class JmsReader(ConsumerMixin):
     def __init__(self):
-        self.running = True
+
         self.listeners = []
-        super(JmsReader, self).__init__()
+
+        self.connection = Connection('amqp://guest:guest@localhost:5672//')
+        self.exchange = Exchange(name='amq.topic', type='topic', channel=self.connection)
+        self.queue = Queue(name='', exchange=self.exchange, routing_key='oms.alertalarm.msg',
+                      channel=self.connection, durable=False, auto_delete=True)
+
         log.info('JMS reader initialized')
 
-    def run(self):
-        while self.running:
-            # get event from JMS
-            # self._forward_event(event)
-            time.sleep(1)
+    def get_consumers(self, Consumer, channel):
+        return [
+            Consumer([self.queue], callbacks=[self.on_message]),
+        ]
 
-    def _forward_event(self, event):
+    def on_message(self, body, message):
+        log.info("RECEIVED JMS MESSAGE: %s" % (body, ))
+
+        message.ack()
+
+        oms_msg = json.loads(body)
+        attributes = oms_msg.get('attributes')
+        source = attributes.get('platformId')
+        event = oms_msg.get('messageText')
+
         for listener in self.listeners:
-            listener(event)
+            listener(source, event)
+
+    def start(self):
+        reader_thread = Thread(target=self.run)
+        reader_thread.start()
 
     def add_listener(self, callback):
         self.listeners.append(callback)
 
     def interrupt(self, *args):
-        self.running = False
+        self.should_stop = True

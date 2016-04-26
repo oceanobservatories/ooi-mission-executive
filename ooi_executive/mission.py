@@ -162,14 +162,23 @@ class Mission(object):
                     session.commit()
                     self.active = False
 
-    def jms_listener(self, event):
+    def jms_listener(self, source, event):
         """
         Listen for JMS events
         Trigger an execute if a target event is received
         :param event:
         :return:
         """
-        # TODO
+
+        schedule = self.mission.get(Tags.SCHEDULE, {})
+
+        # check if the incoming event is a trigger to execute the mission
+        if schedule.get('source') == source and schedule.get('event') == event:
+
+            log.debug('Scheduling Mission to Run immediately...')
+
+            # Schedule the mission to run immediately
+            self._add_job()
 
     def _get_events(self, session, run_id=None):
         events = []
@@ -244,11 +253,17 @@ class Mission(object):
         cron_keys = {'year', 'month', 'day', 'week', 'day_of_week',
                      'hour', 'minute', 'second', 'start_date', 'end_date'}
 
+        event_keys = {'source', 'event'}
+
+        trigger = None
+
         if len(cron_keys.intersection(schedule.keys())) > 0:
             trigger = Tags.CRON
-        else:
+        elif len(event_keys.intersection(schedule.keys())) == 0:
             trigger = 'date'
-        self._add_job(trigger, schedule)
+
+        if trigger:
+            self._add_job(trigger, schedule)
 
     def deactivate(self):
         if self.active:

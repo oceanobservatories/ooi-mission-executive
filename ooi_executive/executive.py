@@ -6,6 +6,7 @@ import time
 from uuid import uuid4
 import yaml
 
+from kombu import Connection
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import request, jsonify, Response
@@ -29,9 +30,10 @@ log = logging.getLogger(__name__)
 
 
 def setup():
+
     app.jms_reader = JmsReader()
-    app.jms_reader.daemon = True
     app.jms_reader.start()
+
     app.scheduler = BackgroundScheduler()
     app.scheduler.configure(executors={'default': ThreadPoolExecutor(20)}, job_defaults={'max_instances': 1})
     app.scheduler.start()
