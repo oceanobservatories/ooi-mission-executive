@@ -258,7 +258,7 @@ class RestExecutor(Executor):
 
     def unlock(self, instruments):
         for instrument in instruments:
-            locker = requests.get(self._url(instrument, 'lock')).json()
+            locker = requests.get(self._url(instrument, 'lock')).json().get('locked-by')
             if locker == self.mission_id:
                 log.info('Unlocking %s', instrument)
                 requests.post(self._url(instrument, 'unlock'))

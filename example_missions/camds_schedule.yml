@@ -16,7 +16,7 @@ blocks:
   sequence:
   - parameter: AUTO_CAPTURE_DURATION
     set: RS10ENGC-XX00X-00-CAMDSB001
-    value: '00:00:03'
+    value: 3
   - parameter: PRESET_NUMBER
     set: RS10ENGC-XX00X-00-CAMDSB001
     value: 1
