@@ -1,0 +1,40 @@
+name: Acquire_Status_presta001
+desc: Performs a periodic Acquire Status on the PRESTA001 bench instrument
+version: 1-00
+
+debug: true
+drivers:
+- RS10ENGC-XX00X-00-PRESTA001
+
+error_policy:
+  type: abort
+
+schedule:
+  minute: 0,30 # acquire status every half hour
+
+blocks:
+- label: mission
+  sequence:
+  - get_state: RS10ENGC-XX00X-00-PRESTA001
+  - block_name: status_from_command
+    condition:
+      variable: driver_state
+      value: DRIVER_STATE_COMMAND
+  - block_name: status_from_autosample
+    condition:
+      variable: driver_state
+      value: DRIVER_STATE_AUTOSAMPLE
+
+- label: status_from_command
+  sequence:
+  - command: DRIVER_EVENT_ACQUIRE_STATUS
+    execute: RS10ENGC-XX00X-00-PRESTA001
+
+- label: status_from_autosample
+  sequence:
+  - command: DRIVER_EVENT_STOP_AUTOSAMPLE
+    execute: RS10ENGC-XX00X-00-PRESTA001
+  - command: DRIVER_EVENT_ACQUIRE_STATUS
+    execute: RS10ENGC-XX00X-00-PRESTA001
+  - command: DRIVER_EVENT_START_AUTOSAMPLE
+    execute: RS10ENGC-XX00X-00-PRESTA001

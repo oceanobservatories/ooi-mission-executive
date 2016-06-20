@@ -1,0 +1,19 @@
+name: Acquire_Status_botpta001
+desc: Performs a periodic Acquire Status on the BOTPTA001 bench instrument
+version: 1-00
+
+debug: true
+drivers:
+- RS10ENGC-XX00X-00-BOTPTA001
+
+error_policy:
+  type: abort
+
+schedule:
+  minute: 0,30 # acquire status every half hour
+
+blocks:
+- label: mission
+  sequence:
+  - execute: RS10ENGC-XX00X-00-BOTPTA001
+    command: DRIVER_EVENT_ACQUIRE_STATUS

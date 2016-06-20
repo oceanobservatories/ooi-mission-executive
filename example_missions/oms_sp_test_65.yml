@@ -1,0 +1,19 @@
+name: OMS_SP_event_65_scheduling_test
+desc: Test 'At Step' Event from Shallow Profiler
+version: 1-00
+
+debug: true
+drivers:
+- RS10ENGC-XX00X-00-SPKIRA001
+error_policy:
+  type: abort
+
+schedule:
+  source: 'SC01A'
+  event: 'Shallow Profiler Event Number 65'
+
+blocks:
+- label: mission
+  sequence:
+  - execute: RS10ENGC-XX00X-00-SPKIRA001
+    command: DRIVER_EVENT_ACQUIRE_STATUS

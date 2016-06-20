@@ -2,6 +2,8 @@ from threading import Thread
 import logging
 import json
 
+from ooi_executive import app
+
 from kombu.mixins import ConsumerMixin
 from kombu import Connection, Queue, Exchange
 
@@ -15,7 +17,9 @@ class JmsReader(ConsumerMixin):
 
         self.listeners = []
 
-        self.connection = Connection('amqp://guest:guest@localhost:5672//')
+        oms_server = app.config['OMS_SRVER']
+
+        self.connection = Connection(oms_server)
         self.exchange = Exchange(name='amq.topic', type='topic', channel=self.connection)
         self.queue = Queue(name='', exchange=self.exchange, routing_key='oms.alertalarm.msg',
                       channel=self.connection, durable=False, auto_delete=True)
@@ -34,7 +38,7 @@ class JmsReader(ConsumerMixin):
 
         oms_msg = json.loads(body)
         attributes = oms_msg.get('attributes')
-        source = attributes.get('platformId')
+        source = attributes.get('omsplatformId')
         event = oms_msg.get('messageText')
 
         for listener in self.listeners:

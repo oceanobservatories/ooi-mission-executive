@@ -1,0 +1,19 @@
+name: Acquire_Status_camdsb001
+desc: Performs a periodic Acquire Status on the CAMDSB001 bench instrument
+version: 1-00
+
+debug: true
+drivers:
+- RS10ENGC-XX00X-00-CAMDSB001
+
+error_policy:
+  type: abort
+
+schedule:
+  minute: 0,30 # acquire status every half hour
+
+blocks:
+- label: mission
+  sequence:
+  - execute: RS10ENGC-XX00X-00-CAMDSB001
+    command: DRIVER_EVENT_ACQUIRE_STATUS
