@@ -401,7 +401,7 @@ class Mission(object):
 
     @staticmethod
     def load_all():
-        log.error('LOAD ALL')
+        log.info('LOADING ALL MISSIONS FROM DATABASE')
         session = app.Session()
         missions = session.query(MissionData).all()
         d = {}

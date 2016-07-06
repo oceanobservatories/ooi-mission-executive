@@ -1,10 +1,9 @@
-import logging
 
+EXEC_PORT = 8000
 IA_HOST = 'localhost'
 IA_PORT = 12572
-DEBUG = False
-LOG_LEVEL = logging.DEBUG
-OMS_SRVER = 'amqp://guest:guest@uframe-3-test.ooi.rutgers.edu:5672//'
+LOG_LEVEL = 'DEBUG'
+OMS_SERVER = 'amqp://localhost//'
 
-# Currently only postgres is supported
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://awips@localhost/metadata'
+
+SQLALCHEMY_DATABASE_URI = 'sqlite:///executive.db'

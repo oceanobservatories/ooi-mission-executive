@@ -8,7 +8,6 @@ from sqlalchemy.orm import relationship, backref
 __author__ = 'petercable'
 
 Base = declarative_base()
-Base.metadata.schema = 'mission_executive'
 log = logging.getLogger(__name__)
 
 
@@ -69,9 +68,6 @@ class EventType(Base):
 
 def create_db(app):
     log.info('Creating database')
-    exists = app.engine.execute("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'mission_executive')").first()
-    if not exists['exists']:
-        app.engine.execute('CREATE SCHEMA mission_executive AUTHORIZATION awips')
     Base.metadata.create_all(app.engine)
     session = app.Session()
 

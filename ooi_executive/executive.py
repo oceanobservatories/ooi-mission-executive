@@ -6,7 +6,6 @@ import time
 from uuid import uuid4
 import yaml
 
-from kombu import Connection
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import request, jsonify, Response

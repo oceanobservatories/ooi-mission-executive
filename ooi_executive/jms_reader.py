@@ -17,7 +17,7 @@ class JmsReader(ConsumerMixin):
 
         self.listeners = []
 
-        oms_server = app.config['OMS_SRVER']
+        oms_server = app.config['OMS_SERVER']
 
         self.connection = Connection(oms_server)
         self.exchange = Exchange(name='amq.topic', type='topic', channel=self.connection)
@@ -46,6 +46,7 @@ class JmsReader(ConsumerMixin):
 
     def start(self):
         reader_thread = Thread(target=self.run)
+        reader_thread.setDaemon(True)
         reader_thread.start()
 
     def add_listener(self, callback):
